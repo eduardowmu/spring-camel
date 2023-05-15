@@ -5,7 +5,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FileRote extends RouteBuilder {
+public class FileRoute extends RouteBuilder {
     private static String PATH_FILE = "file/";
 
     @Override
