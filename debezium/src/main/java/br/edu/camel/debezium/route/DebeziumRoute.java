@@ -2,7 +2,11 @@ package br.edu.camel.debezium.route;
 
 import org.apache.camel.builder.RouteBuilder;
 //import org.apache.camel.spi.annotations.Component;
+import org.apache.kafka.connect.data.Schema;
+import org.apache.kafka.connect.data.Struct;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 @Component
 public class DebeziumRoute extends RouteBuilder {
@@ -28,6 +32,22 @@ public class DebeziumRoute extends RouteBuilder {
         .log("operaçao: ${headers.CamelDebeziumOperation}") //c = create, u = update, d = delete, r = snapshot
         .log("base: '${headers.CamelDebeziumSourceMetaData[db]}'")
         .log("tabela: '${headers.CamelDebeziumSourceMetaData[table]}'")
-        .log("primary key: ${headers.CamelDebeziumKey}"); //decoderbufs e o padrao do debizium pg
+        .log("primary key: ${headers.CamelDebeziumKey}")
+        /*Conversao da mensagem que esta sendo intercambiado, quando um
+        * evento e disparado*/
+        .process(exchange -> {
+            /*apache-kafka*/
+/*            Struct body = exchange.getIn().getBody(Struct.class);
+            Schema schema = body.schema();
+
+            log.info("Body: " + body);
+            log.info("Schema: " + schema);
+            log.info("Campos: " + schema.fields());
+            log.info("Name: " + schema.field("name"));*/
+
+            //outra forma
+            Map body = exchange.getIn().getBody(Map.class);
+            log.info("Body: " + body);
+        }); //decoderbufs e o padrao do debizium pg
     }
 }
