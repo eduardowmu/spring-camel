@@ -1,9 +1,10 @@
 package br.edu.camel.debezium.route;
 
 import org.apache.camel.builder.RouteBuilder;
-import org.springframework.stereotype.Component;
+import org.apache.camel.spi.annotations.Component;
+//import org.springframework.stereotype.Component;
 
-@Component
+@Component("file/offset-file.dat")
 public class DebeziumRoute extends RouteBuilder {
     /*Atributo obrigatorio para que o debizium seja ativado e consiga
     * definir uma rota. Se nao for encontrado, o proprio debizium cria*/
@@ -21,6 +22,12 @@ public class DebeziumRoute extends RouteBuilder {
                 + "&databaseHostName=" + HOST + "&databaseUser=" + USER_NAME
                 + "&databasePassword=" + PASSWORD + "&databaseServerName=" + DB
                 + "&databaseDbname=" + DB + "&pluginName=pgoutput")
-        .log("EVENTO: ${body}"); //decoderbufs e o padrao do debizium pg
+        .log("EVENTO: ${body}")
+        .log("identificador: ${headers.CamelDebeziumIdentifier}")
+        .log("source metadata: ${headers.CamelDebeziumSourceMetaData}")
+        .log("operaçao: ${headers.CamelDebeziumOperation}")
+        .log("base: '${headers.CamelDebeziumSourceMetaData[db]}'")
+        .log("tabela: '${headers.CamelDebeziumSourceMetaData[table]}'")
+        .log("primary key: ${headers.CamelDebeziumKey}"); //decoderbufs e o padrao do debizium pg
     }
 }
