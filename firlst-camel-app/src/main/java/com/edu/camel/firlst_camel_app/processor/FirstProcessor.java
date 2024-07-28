@@ -1,4 +1,4 @@
-package com.edu.camel.processor;
+package com.edu.camel.firlst_camel_app.processor;
 
 import org.apache.camel.Processor;
 import org.apache.camel.Exchange;
