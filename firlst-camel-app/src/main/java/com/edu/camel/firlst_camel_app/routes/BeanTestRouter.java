@@ -3,7 +3,7 @@ package com.edu.camel.firlst_camel_app.routes;
 import org.apache.camel.builder.RouteBuilder;
 import org.springframework.stereotype.Component;
 
-@Component
+//@Component
 public class BeanTestRouter extends RouteBuilder {
     @Override
     public void configure() throws Exception {
@@ -13,7 +13,7 @@ public class BeanTestRouter extends RouteBuilder {
     }
 }
 
-@Component
+//@Component
 class Calculator {
     public String add() {
         return "Welcome to add method!";
