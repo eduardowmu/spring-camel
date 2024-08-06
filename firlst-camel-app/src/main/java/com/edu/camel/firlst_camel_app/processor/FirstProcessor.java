@@ -6,6 +6,6 @@ import org.apache.camel.Exchange;
 public class FirstProcessor implements Processor {
     @Override
     public void process(Exchange exchange) throws Exception {
-
+        System.out.println(exchange.getIn().getBody(String.class));
     }
 }
