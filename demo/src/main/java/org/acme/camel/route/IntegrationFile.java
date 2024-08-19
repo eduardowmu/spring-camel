@@ -18,7 +18,7 @@ public class IntegrationFile extends RouteBuilder {
                 //chamando uma processor
                 /*.process(exchange -> System.out.println(
                 exchange.getMessage().getBody(String.class)))*/
-                .process(exchange -> this.fileProcessor.process(exchange))
+//                .process(exchange -> this.fileProcessor.process(exchange))
                 .log("Processando arquivo: ${file:name}")
                 .setProperty("CNPJ", xpath("{{xpathCnpjTransportadora}}", ns))
                 //NOMEANDO O ARQUIVO de saida
@@ -32,18 +32,34 @@ public class IntegrationFile extends RouteBuilder {
                     .when(//xpath("{{xpathCnpjTransportadora}}")
                             exchangeProperty("CNPJ").isEqualTo("2"))
                                                         //a cada 5 em 5s permitirá requisição
-                        .throttle(1).timePeriodMillis(5000).asyncDelayed()
-                            //.log("HTTP")
-                            .setHeader(HttpConstants.HTTP_METHOD, constant("POST"))
-                            .setHeader(HttpConstants.HTTP_URI, constant("{{urlApiTransportadora2}}"))
-                            .setHeader(HttpConstants.HTTP_PATH, constant("nfes"))
-                            .setHeader(HttpConstants.CONTENT_TYPE//, constant("application/xml")
-                            //a continuação abaixo tem o mesmo efeito que o de cima
-                            ).constant("application/xml")
-                            .to("http:servidorTransportadora2")
-                .endChoice()
+//                        .throttle(1).timePeriodMillis(5000).asyncDelayed()
+//                            //.log("HTTP")
+//                            .setHeader(HttpConstants.HTTP_METHOD, constant("POST"))
+//                            .setHeader(HttpConstants.HTTP_URI, constant("{{urlApiTransportadora2}}"))
+//                            .setHeader(HttpConstants.HTTP_PATH, constant("nfes"))
+//                            .setHeader(HttpConstants.CONTENT_TYPE//, constant("application/xml")
+//                            //a continuação abaixo tem o mesmo efeito que o de cima
+//                            ).constant("application/xml")
+//                            .to("http:servidorTransportadora2")
+//                .endChoice()
                 .otherwise()
                 .log("Transportadora não integrada")
                 .end();
+
+//        from("direct:integracaoTransportadora1")
+//                .routeId("integration-file-transporter1")
+//                .to("file:{{diretorioTransportadora}}?fileName=${date:now:HHmmss}_${file:name}");
+
+//        from("direct:integracaoTransportadora2")
+//                .routeId("integration-file-transporter2")
+//                .throttle(1).timePeriodMillis(5000).asyncDelayed()
+//                //.log("HTTP")
+//                .setHeader(HttpConstants.HTTP_METHOD, constant("POST"))
+//                .setHeader(HttpConstants.HTTP_URI, constant("{{urlApiTransportadora2}}"))
+//                .setHeader(HttpConstants.HTTP_PATH, constant("nfes"))
+//                .setHeader(HttpConstants.CONTENT_TYPE//, constant("application/xml")
+//                        //a continuação abaixo tem o mesmo efeito que o de cima
+//                ).constant("application/xml")
+//                .to("http:servidorTransportadora2");
     }
 }
