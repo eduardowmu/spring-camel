@@ -2,8 +2,11 @@ package org.acme.camel.route;
 
 import org.acme.camel.process.FileProcessor;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.file.GenericFileOperationFailedException;
 import org.apache.camel.component.http.HttpConstants;
 import org.apache.camel.support.builder.Namespaces;
+
+import java.io.IOException;
 
 import static org.apache.camel.component.file.FileConstants.FILE_NAME;
 
@@ -13,7 +16,26 @@ public class IntegrationFile extends RouteBuilder {
     @Override
     public void configure() throws Exception {
         var ns = new Namespaces("ns", "http://www.portalfiscal.inf.br/nfe");
-        from("file:{{diretorioEntrada}}?delay=5000")
+
+        //processamento de erro padrão
+        errorHandler(deadLetterChannel("file:{{diretorioTransportadora1Erro}}"));
+
+        onException(GenericFileOperationFailedException.class)
+                //mensagem de erro padrão
+                .useOriginalMessage()
+                .handled(true)
+                //maximo 5 retentativas
+                .maximumRedeliveries(2)
+        //a cada 5s
+//                .redeliveryDelay(5000)
+//                .to("file:{{diretorioTransportadora1Erro}}")
+                ;
+
+//        onException(IOException.class);
+//
+//        onException(RuntimeException.class);
+
+        from("file:{{diretorioEntrada}}?delay=2000&movedFailed=erro")
                 .routeId("integration-file")
                 //chamando uma processor
                 /*.process(exchange -> System.out.println(
@@ -28,7 +50,8 @@ public class IntegrationFile extends RouteBuilder {
                 .choice()
                     .when(//xpath("{{xpathCnpjTransportadora}}")
                             exchangeProperty("CNPJ").isEqualTo("1"))
-                    .to("file:{{diretorioTransportadora}}?fileName=${date:now:HHmmss}_${file:name}")
+                            .to("direct:servidorTransportadora1")
+//                    .to("file:{{diretorioTransportadora}}?fileName=${date:now:HHmmss}_${file:name}")
                     .when(//xpath("{{xpathCnpjTransportadora}}")
                             exchangeProperty("CNPJ").isEqualTo("2"))
                                                         //a cada 5 em 5s permitirá requisição
@@ -40,7 +63,7 @@ public class IntegrationFile extends RouteBuilder {
 //                            .setHeader(HttpConstants.CONTENT_TYPE//, constant("application/xml")
 //                            //a continuação abaixo tem o mesmo efeito que o de cima
 //                            ).constant("application/xml")
-//                            .to("http:servidorTransportadora2")
+                            .to("direct:servidorTransportadora2")
 //                .endChoice()
                 .otherwise()
                 .log("Transportadora não integrada")
